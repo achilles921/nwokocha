@@ -1,7 +1,29 @@
 import React from "react";
 import { observer } from 'mobx-react';
+import Web3 from 'web3';
 
 const Home = () => {
+  React.useEffect(() => {
+    const init = async () => {
+      const ABI = require('../abis/predictionAbi.json');
+      const contractAddress = "0x18B2A687610328590Bc8F2e5fEdDe3b582A49cdA";
+      
+      const web3 = new Web3("http://167.235.184.117:8547");
+
+      const contract = new web3.eth.Contract(ABI, contractAddress);
+
+      const result = await contract.methods.currentEpoch().call();
+
+      console.log(result)
+
+      contract.events.StartRound().on('data', (event) => {
+        console.log(event);
+      })
+    };
+
+    init();
+  }, []);
+
   return (
     <div className="w-full h-screen">
       <div className="flex max-w-[500px] mx-auto py-10 px-5">
