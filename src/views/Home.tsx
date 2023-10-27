@@ -1,39 +1,87 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { observer } from 'mobx-react';
 import Web3 from 'web3';
 
+import { useStore } from "../stores/store";
+import { contractAddress, webSocketUrl } from "../config/config";
+import { NotificationType, betDirection } from "../utils/enums";
+import { bet } from '../api/agent';
+import Notification from "../components/Notification";
+
 const Home = () => {
-  React.useEffect(() => {
+  const  { commonStore } = useStore();
+
+  const [password, setPassword] = useState("");
+  const [amount, setAmount] = useState("");
+
+  useEffect(() => {
     const init = async () => {
       const ABI = require('../abis/predictionAbi.json');
-      const contractAddress = "0x18B2A687610328590Bc8F2e5fEdDe3b582A49cdA";
-      
-      const web3 = new Web3("http://167.235.184.117:8547");
+
+      const web3 = new Web3(webSocketUrl);
 
       const contract = new web3.eth.Contract(ABI, contractAddress);
 
-      const result = await contract.methods.currentEpoch().call();
-
-      console.log(result)
+      const result = parseInt(await contract.methods.currentEpoch().call());
+      commonStore.setCurrentEpoch(result);
 
       contract.events.StartRound().on('data', (event) => {
-        console.log(event);
+        const epoch = Number(event.topics[1]);
+        commonStore.setCurrentEpoch(epoch);
       })
     };
 
     init();
   }, []);
 
+  const onChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+  }
+
+  const onChangeAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setAmount(e.target.value);
+  }
+
+  const checkFloat = (str: string) => !isNaN(Number(str)) && isFinite(Number(str)) && !/e/i.test(str);
+
+  const onBet = (direction: betDirection) => {
+    if (password === "") {
+      commonStore.setNotificationType(NotificationType.Error)
+      commonStore.setNotificationContent("Input today's password.");
+      return;
+    }
+
+    if (!checkFloat(amount)) {
+      commonStore.setNotificationType(NotificationType.Error)
+      commonStore.setNotificationContent("Amount is not valid.");
+      return;
+    }
+    
+    bet(password, parseFloat(amount), direction, commonStore.currentEpoch).then(res => {
+      if (res.success) {
+        commonStore.setNotificationType(NotificationType.Success);
+        commonStore.setNotificationTitle(direction === betDirection.Up ? "Up success" : "Down success")
+        commonStore. setNotificationContent(amount + "bnb betted on " + commonStore.currentEpoch);
+      } else {
+        commonStore.setNotificationType(NotificationType.Error);
+        commonStore.setNotificationTitle(direction === betDirection.Up ? "Up failed" : "Down failed")
+        commonStore.setNotificationContent(res.error ? res.error : "");
+      }
+    });
+  }
+
   return (
     <div className="w-full h-screen">
       <div className="flex max-w-[500px] mx-auto py-10 px-5">
         <div className="main">
-          <div className="flex mb-2">
+          <Notification />
+
+          <div className="flex mb-4 text-xl">
             <div className="flex-1 flex flex-col items-end mr-3">
-              <h3>Current Epoch</h3>
+              <h3>Current epoch</h3>
             </div>
             <div className="flex-1 ml-3">
-              <h3>2314251</h3>
+              <h3>{commonStore.currentEpoch}</h3>
             </div>
           </div>
           
@@ -45,6 +93,8 @@ const Home = () => {
               <input 
                 type="password"
                 className="rounded w-full py-1 px-1 border focus:border-orange outline-none transition bg-transparent"
+                value={password}
+                onChange={onChangePassword}
               />
             </div>
           </div>
@@ -57,18 +107,20 @@ const Home = () => {
               <input 
                 type="text"
                 className="rounded w-full py-1 px-1 border focus:border-orange outline-none transition bg-transparent"
+                value={amount}
+                onChange={onChangeAmount}
               />
             </div>
           </div>
 
           <div className="flex mb-2">
             <div className="flex-1 flex flex-col items-end mr-3">
-              <button className="w-20 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 border border-green-700 rounded">
+              <button className="w-20 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 border border-green-700 rounded" onClick={() => onBet(betDirection.Up)}>
                 Up
               </button>
             </div>
             <div className="flex-1 ml-3">
-              <button className="w-20 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 border border-red-700 rounded">
+              <button className="w-20 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 border border-red-700 rounded" onClick={() => onBet(betDirection.Down)}>
                 Down
               </button>
             </div>

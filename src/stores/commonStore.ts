@@ -1,45 +1,30 @@
 import { makeAutoObservable, reaction } from "mobx";
 
+import { NotificationType } from "../utils/enums";
 
 export default class CommonStore {
-    error: any | null = null;
-    modalContent: string | null = null;
-    modalMetaContent: string | undefined | null = null;
-    modalVisible: boolean = false;
-    token: string | null = window.localStorage.getItem("jwt");
-    appLoaded = false;
+    currentEpoch: number = 0;
+    notificationType: number = NotificationType.None;
+    notificationTitle: string = "";
+    notificationContent: string = "";
 
     constructor() {
-        makeAutoObservable(this);
-
-        reaction(
-            () => this.token,
-            token => {
-                if(token) {
-                    window.localStorage.setItem('jwt', token)
-                } else {
-                    window.localStorage.removeItem('jwt')
-                }
-            }
-        )
+      makeAutoObservable(this);
     }
 
-    closeModal = () => {
-        this.modalVisible = false;
-        this.modalContent = null;
-        this.modalMetaContent = null;
+    setCurrentEpoch = (currentEpoch: number) => {
+        this.currentEpoch = currentEpoch;
     }
 
-    setToken = (token: string | null) => {
-        this.token = token;
+    setNotificationTitle = (title: string) => {
+      this.notificationTitle = title;
     }
 
-    setAppLoaded = () => {
-        this.appLoaded = true;
+    setNotificationContent = (content: string) => {
+      this.notificationContent = content;
     }
 
-    setServerError = (error: any) => {
-        this.error = error;
-        
+    setNotificationType = (type: NotificationType) => {
+      this.notificationType = type;
     }
 }
