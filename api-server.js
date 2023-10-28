@@ -13,7 +13,10 @@ const abi = require('./src/abis/predictionAbi.json');
 
 const port = process.env.API_PORT || 3001;
 const appPort = process.env.SERVER_PORT || 3000;
-const appOrigin = `http://localhost:${appPort}`;
+const appOrigins = [
+  `http://localhost:${appPort}`,
+  `http://${process.env.SERVER_IP}:${appPort}`,
+];
 const provider = new ethers.WebSocketProvider(process.env.REACT_APP_WEB_SOCKET_URL);
 const gasPrice = 3000000000;
 const gasLimit = 1200000;
@@ -25,7 +28,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan("dev"));
 app.use(helmet());
-app.use(cors({ origin: appOrigin }));
+app.use(cors({ origin: appOrigins }));
 
 const handleError = (e) => {
   if (e.reason == "cancelled") {
