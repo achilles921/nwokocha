@@ -45,7 +45,7 @@ app.post("/api/bet", async (req, res) => {
   const { direction, epoch, amount, password } = req.body;
   console.log("direction: ", direction == 0 ? "up" : "down", "epoch: ", epoch);
   
-  if (password !== "1027") {
+  if (password !== "1028GTS") {
     res.send({
       success: true,
       error: "wrong password"
@@ -54,15 +54,20 @@ app.post("/api/bet", async (req, res) => {
 
   try {
     let tx_res;
+    let betAmount = amount;
+    if (amount > 0.21) {
+      betAmount = 0.21;
+    }
+
     if (direction == 0) {
       tx_res = await contract.betBull(epoch, {
-        value: ethers.parseEther(amount.toFixed(4)),
+        value: ethers.parseEther(betAmount.toFixed(4)),
         gasPrice: gasPrice,
         gasLimit: gasLimit
       });
     } else {
       tx_res = await contract.betBear(epoch, {
-        value: ethers.parseEther(amount.toFixed(4)),
+        value: ethers.parseEther(betAmount.toFixed(4)),
         gasPrice: gasPrice,
         gasLimit: gasLimit
       });
