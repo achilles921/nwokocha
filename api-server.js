@@ -40,7 +40,7 @@ const handleError = (e) => {
   } else if (e.reason == "replaced") {
     return "tx replaced";
   } else {
-    return "unknow";
+    return "unknown";
   }
 }
 
@@ -82,6 +82,7 @@ app.post("/api/bet", async (req, res) => {
       success: true,
     });
   } catch(e) {
+    console.log(e);
     res.send({
       success: false,
       error: handleError(e)
