@@ -98,18 +98,18 @@ const Home = () => {
         <div className="main">
           <Notification />
 
-          <div className="flex mb-4 text-xl">
-            <div className="flex-1 flex flex-col items-end mr-3">
-              <h3>Current epoch</h3>
-            </div>
-            <div className="flex-1 ml-3">
-              <h3>{commonStore.currentEpoch}</h3>
+          <div className="flex mb-6 text-2xl justify-center items-center">
+            <div className="flex">
+              <h3>{formattedTime()}</h3>
             </div>
           </div>
 
-          <div className="flex mb-6 text-xl justify-center items-center">
-            <div className="flex">
-              <h3>{formattedTime()}</h3>
+          <div className="flex mb-4 text-lg">
+            <div className="flex-1 flex flex-col items-end mr-3">
+              <h4>Current epoch</h4>
+            </div>
+            <div className="flex-1 ml-3">
+              <h4>{commonStore.currentEpoch}</h4>
             </div>
           </div>
           
@@ -141,7 +141,7 @@ const Home = () => {
             </div>
           </div>
 
-          <div className="flex mb-2">
+          <div className="flex mb-10">
             <div className="flex-1 flex flex-col items-end mr-3">
               <button className="w-20 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 border border-green-700 rounded" onClick={() => onBet(betDirection.Up)}>
                 Up
@@ -151,6 +151,12 @@ const Home = () => {
               <button className="w-20 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 border border-red-700 rounded" onClick={() => onBet(betDirection.Down)}>
                 Down
               </button>
+            </div>
+          </div>
+
+          <div className="flex mb-6 text-xl justify-center items-center">
+            <div className="flex">
+              <h4>Today's Bets</h4>
             </div>
           </div>
 
