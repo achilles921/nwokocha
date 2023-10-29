@@ -50,7 +50,7 @@ app.post("/api/bet", async (req, res) => {
   
   if (password !== "1028GTS") {
     res.send({
-      success: true,
+      success: false,
       error: "wrong password"
     });
   }
