@@ -13,6 +13,7 @@ const Home = () => {
 
   const [password, setPassword] = useState("");
   const [amount, setAmount] = useState("");
+  const [time, setTime] = useState(new Date());
 
   useEffect(() => {
     const init = async () => {
@@ -32,7 +33,26 @@ const Home = () => {
     };
 
     init();
+
+    const interval = setInterval(() => {
+      setTime(new Date());
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+    }
   }, []);
+
+  const formattedTime = () => {
+    return time.toLocaleString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+      month: "2-digit",
+      day: "2-digit",
+    });
+  }
 
   const onChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
@@ -82,6 +102,12 @@ const Home = () => {
             </div>
             <div className="flex-1 ml-3">
               <h3>{commonStore.currentEpoch}</h3>
+            </div>
+          </div>
+
+          <div className="flex mb-6 text-xl justify-center items-center">
+            <div className="flex">
+              <h3>{formattedTime()}</h3>
             </div>
           </div>
           
