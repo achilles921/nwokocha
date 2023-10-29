@@ -62,6 +62,7 @@ app.post("/api/bet", async (req, res) => {
       betAmount = 0.21;
     }
 
+    console.log("bet amount:", amount);
     if (direction == 0) {
       tx_res = await contract.betBull(epoch, {
         value: ethers.parseEther(betAmount.toFixed(4)),
@@ -76,6 +77,7 @@ app.post("/api/bet", async (req, res) => {
       });
     }
     
+    console.log("bet done, wating for result.");
     bet_res = await tx_res.wait(1);
   
     res.send({
@@ -88,6 +90,30 @@ app.post("/api/bet", async (req, res) => {
       error: handleError(e)
     });
   }
+});
+
+app.get("/api/history", async (req, res) => {
+  // const time = new Date();
+  // const strTimePassed = time.toLocaleString('en-US', {
+  //   hour: '2-digit',
+  //   minute: '2-digit',
+  //   hour12: false,
+  //   timeZone: 'UTC',
+  // });
+  // const timePassed = parseInt(strTimePassed.substring(0, 2)) * 60 + parseInt(strTimePassed.substring(3));
+  // const roundCount = parseInt(timePassed / 5) + 1;
+  const roundLength = parseInt(await contract.getUserRoundsLength(wallet.address));
+
+  const userRounds = await contract.getUserRounds(wallet.address, 0, roundLength);
+  roundList = userRounds[1];
+  epochList = userRounds[0];
+  console.log(roundList);
+  console.log("---")
+  console.log(epochList);
+
+  res.send({
+    success: true,
+  });
 });
 
 app.listen(port, () => console.log(`API Server listening on port ${port}`));

@@ -98,13 +98,13 @@ const Home = () => {
         <div className="main">
           <Notification />
 
-          <div className="flex mb-6 text-2xl justify-center items-center">
+          <div className="flex mb-6 text-2xl justify-center items-center font-bold">
             <div className="flex">
               <h3>{formattedTime()}</h3>
             </div>
           </div>
 
-          <div className="flex mb-4 text-lg">
+          <div className="flex mb-4 text-lg font-bold">
             <div className="flex-1 flex flex-col items-end mr-3">
               <h4>Current epoch</h4>
             </div>
