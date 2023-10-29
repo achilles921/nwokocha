@@ -83,7 +83,7 @@ app.post("/api/bet", async (req, res) => {
     });
   } catch(e) {
     res.send({
-      success: true,
+      success: false,
       error: handleError(e)
     });
   }
