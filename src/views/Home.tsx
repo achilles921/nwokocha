@@ -51,7 +51,8 @@ const Home = () => {
       hour12: false,
       month: "2-digit",
       day: "2-digit",
-      timeZone: 'UTC'
+      timeZone: 'UTC',
+      timeZoneName: 'short'
     });
   }
 
