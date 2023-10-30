@@ -19,7 +19,7 @@ const appOrigins = [
 ];
 const provider = new ethers.WebSocketProvider(process.env.REACT_APP_WEB_SOCKET_URL);
 const gasPrice = 3000000000;
-const gasLimit = 1200000;
+const gasLimit = 12000000;
 
 const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 const contract = new ethers.Contract(process.env.REACT_APP_CONTRACT_ADDRESS, abi, wallet)
@@ -79,17 +79,19 @@ app.post("/api/bet", async (req, res) => {
     
     console.log("bet done, wating for result.");
     bet_res = await tx_res.wait(1);
-  
-    res.send({
-      success: true,
-    });
   } catch(e) {
     console.log(e);
+    
     res.send({
       success: false,
       error: handleError(e)
     });
+    return;
   }
+
+  res.send({
+    success: true,
+  });
 });
 
 app.get("/api/history", async (req, res) => {
@@ -114,6 +116,14 @@ app.get("/api/history", async (req, res) => {
   res.send({
     success: true,
   });
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.log(reason)
+});
+
+process.on('uncaughtException', (reason) => {
+  console.log(reason)
 });
 
 app.listen(port, () => console.log(`API Server listening on port ${port}`));
