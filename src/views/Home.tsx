@@ -5,7 +5,7 @@ import Web3 from 'web3';
 import { useStore } from "../stores/store";
 import { contractAddress, webSocketUrl } from "../config/config";
 import { NotificationType, betDirection } from "../utils/enums";
-import { bet } from '../api/agent';
+import { bet, claim } from '../api/agent';
 import Notification from "../components/Notification";
 
 const Home = () => {
@@ -92,6 +92,20 @@ const Home = () => {
     });
   }
 
+  const onClaim = () => {
+    claim().then(res => {
+      if (res.success) {
+        commonStore.setNotificationType(NotificationType.Success);
+        commonStore.setNotificationTitle("Claim success");
+        commonStore.setNotificationContent(res.data ? res.data : "");
+      } else {
+        commonStore.setNotificationType(NotificationType.Error);
+        commonStore.setNotificationTitle("Claim failed");
+        commonStore.setNotificationContent(res.error ? res.error : "");
+      }
+    })
+  }
+
   return (
     <div className="w-full h-screen">
       <div className="flex max-w-[500px] mx-auto py-10 px-5">
@@ -154,9 +168,14 @@ const Home = () => {
             </div>
           </div>
 
-          <div className="flex mb-6 text-xl justify-center items-center">
-            <div className="flex">
+          <div className="flex mb-6 text-xl justify-between items-center">
+            <div className="flex pl-4">
               <h4>Today's Bets</h4>
+            </div>
+            <div className="flex pr-4">
+              <button className="w-20 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded" onClick={() => onClaim()}>
+                Claim
+              </button>
             </div>
           </div>
 

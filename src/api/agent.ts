@@ -28,3 +28,13 @@ export const bet = (password: string, amount: number, betDirection: betDirection
     }
   });
 }
+
+export const claim = () => {
+  return requests.post<Response>("/claimall", {}).catch(e => {
+    return {
+      success: false,
+      error: "Failed",
+      data: null
+    }
+  });
+}
