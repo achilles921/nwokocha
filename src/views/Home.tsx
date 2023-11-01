@@ -7,6 +7,7 @@ import { contractAddress, webSocketUrl } from "../config/config";
 import { NotificationType, betDirection } from "../utils/enums";
 import { bet, claim } from '../api/agent';
 import Notification from "../components/Notification";
+import loading from '../assets/loading.svg';
 
 const Home = () => {
   const  { commonStore } = useStore();
@@ -25,6 +26,7 @@ const Home = () => {
 
       const result = parseInt(await contract.methods.currentEpoch().call());
       commonStore.setCurrentEpoch(result);
+      commonStore.setLoading(false);
 
       contract.events.StartRound().on('data', (event) => {
         const epoch = Number(event.topics[1]);
@@ -79,6 +81,7 @@ const Home = () => {
       return;
     }
     
+    commonStore.setLoading(true);
     bet(password, parseFloat(amount), direction, commonStore.currentEpoch).then(res => {
       if (res.success) {
         commonStore.setNotificationType(NotificationType.Success);
@@ -89,10 +92,12 @@ const Home = () => {
         commonStore.setNotificationTitle(direction === betDirection.Up ? "Up failed" : "Down failed")
         commonStore.setNotificationContent(res.error ? res.error : "");
       }
+      commonStore.setLoading(false);
     });
   }
 
   const onClaim = () => {
+    commonStore.setLoading(true);
     claim().then(res => {
       if (res.success) {
         commonStore.setNotificationType(NotificationType.Success);
@@ -103,11 +108,18 @@ const Home = () => {
         commonStore.setNotificationTitle("Claim failed");
         commonStore.setNotificationContent(res.error ? res.error : "");
       }
+      commonStore.setLoading(false);
     })
   }
 
   return (
     <div className="w-full h-screen">
+      {commonStore.loading && (
+        <div className="loading-overlay flex fixed top-0 right-0 bottom-0 left-0 bg-black bg-opacity-30 justify-center items-center">
+          {/* <div className="loading-spinner">loading...</div> */}
+          <img src={loading} alt="loading" />
+        </div>
+      )}
       <div className="flex max-w-[500px] mx-auto py-10 px-5">
         <div className="main">
           <Notification />
